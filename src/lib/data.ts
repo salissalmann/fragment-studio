@@ -295,14 +295,6 @@ export const team: TeamMember[] = [
     github: "https://github.com/hasan-murad02",
   },
   {
-    name: "Zainab Butt",
-    role: "Head of Partnerships",
-    bio: "Turns first conversations into clear scopes — relationships, commercial framing, and engagements that actually stick.",
-    skills: ["Client strategy", "Scoping", "Growth"],
-    photo: "/team/zainab-butt.jpg",
-    linkedin: "https://www.linkedin.com/in/zainab-butt-upwork-expert",
-  },
-  {
     name: "Anusha Salman",
     role: "Brand & Marketing Lead",
     bio: "Shapes how Fragment shows up in the world — voice, narrative, and the stories that make the work memorable.",

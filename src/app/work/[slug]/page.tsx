@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ContainBlurImage } from "@/components/ContainBlurImage";
 import { ExamoraCover } from "@/components/ExamoraCover";
 import {
   getNextProject,
@@ -108,7 +108,7 @@ export default async function ProjectPage({
           style={{
             position: "relative",
             background: "var(--tile)",
-            aspectRatio: hasPhotoCover ? "1420 / 1080" : "21/9",
+            aspectRatio: hasPhotoCover ? "16 / 9" : "21/9",
             minHeight: 220,
             overflow: "hidden",
             border: "1px solid rgba(var(--ink-rgb),0.12)",
@@ -117,13 +117,11 @@ export default async function ProjectPage({
           {isExamora ? (
             <ExamoraCover label="EXAMORA" />
           ) : hasPhotoCover ? (
-            <Image
+            <ContainBlurImage
               src={upwork!.cover}
               alt={`${project.name} cover`}
-              fill
               priority
               sizes="(max-width: 1480px) 100vw, 1480px"
-              style={{ objectFit: "cover", objectPosition: "center" }}
             />
           ) : (
             <>

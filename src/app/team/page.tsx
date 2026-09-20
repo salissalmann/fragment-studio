@@ -38,7 +38,7 @@ export default function TeamPage() {
               color: "var(--mono)",
             }}
           >
-            07 PEOPLE
+            06 PEOPLE
           </span>
         </div>
         <h1

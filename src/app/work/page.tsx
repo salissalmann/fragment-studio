@@ -126,12 +126,8 @@ export default function WorkPage() {
             gap: "clamp(14px, 1.8vw, 26px)",
           }}
         >
-          {filtered.map((p, i) => (
-            <ProjectCard
-              key={p.slug}
-              project={p}
-              flex={i % 3 === 0 ? "1.35 1 380px" : "1 1 300px"}
-            />
+          {filtered.map((p) => (
+            <ProjectCard key={p.slug} project={p} flex="1 1 320px" />
           ))}
         </div>
       </section>

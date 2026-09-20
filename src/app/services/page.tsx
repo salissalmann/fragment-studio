@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ContainBlurImage } from "@/components/ContainBlurImage";
 import {
   LAYOUT,
   LINKS,
@@ -258,17 +258,11 @@ function UpworkGallery() {
                   background: "#0a0a0a",
                 }}
               >
-                <Image
+                <ContainBlurImage
                   src={c.cover}
                   alt={`${c.name} cover`}
-                  fill
                   draggable={false}
                   sizes="(max-width: 640px) 86vw, (max-width: 980px) 45vw, 30vw"
-                  style={{
-                    objectFit: "cover",
-                    objectPosition: "center",
-                    pointerEvents: "none",
-                  }}
                 />
                 <span
                   className="mono"
@@ -298,17 +292,12 @@ function UpworkGallery() {
                         background: "#0a0a0a",
                       }}
                     >
-                      <Image
+                      <ContainBlurImage
                         src={src}
                         alt={`${c.name} screenshot ${j + 1}`}
-                        fill
                         draggable={false}
                         sizes="120px"
-                        style={{
-                          objectFit: "cover",
-                          objectPosition: "center top",
-                          pointerEvents: "none",
-                        }}
+                        objectPosition="center"
                       />
                     </div>
                   ))}

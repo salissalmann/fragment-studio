@@ -24,7 +24,7 @@ const METRICS: {
   { v: 200, suf: "K+", label: "Users reached" },
   { v: 70, suf: "M+", label: "Interactions processed" },
   { v: 40, suf: "K+", label: "Revenue generated", pre: "$" },
-  { v: 7, suf: "", label: "Engineers & specialists" },
+  { v: 6, suf: "", label: "Engineers & specialists" },
 ];
 
 const PITCH = [
@@ -61,11 +61,11 @@ const PITCH = [
 ] as const;
 
 const FEATURED_FLEX = [
-  "1 1 100%",
-  "1.4 1 380px",
-  "1 1 300px",
-  "1 1 300px",
-  "1.4 1 380px",
+  "1 1 320px",
+  "1 1 320px",
+  "1 1 320px",
+  "1 1 320px",
+  "1 1 320px",
 ] as const;
 
 const marqueeItems = [...MARQUEE, ...MARQUEE];

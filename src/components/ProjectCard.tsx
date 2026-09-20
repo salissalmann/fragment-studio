@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { Project } from "@/lib/data";
 import { getUpworkCase } from "@/lib/data";
+import { ContainBlurImage } from "@/components/ContainBlurImage";
 import { ExamoraCover } from "@/components/ExamoraCover";
 
 const ACCENT = "var(--accent)";
@@ -87,23 +87,19 @@ export function ProjectCard({ project, flex = "1 1 300px" }: ProjectCardProps) {
           position: "relative",
           overflow: "hidden",
           background: "var(--tile)",
-          height: "clamp(190px, 21vw, 280px)",
+          width: "100%",
+          height: "clamp(210px, 36vw, 320px)",
+          flex: "0 0 auto",
         }}
       >
         {isExamora ? (
           <ExamoraCover hot={hot} label="EXAMORA" />
         ) : cover ? (
-          <Image
+          <ContainBlurImage
             src={cover}
             alt={`${project.name} cover`}
-            fill
             sizes="(max-width: 700px) 100vw, 40vw"
-            style={{
-              objectFit: "cover",
-              objectPosition: "center",
-              transform: hot ? "scale(1.04)" : "scale(1)",
-              transition: "transform .6s cubic-bezier(.2,.7,.2,1)",
-            }}
+            scale={hot ? 1.03 : 1}
           />
         ) : (
           <>
