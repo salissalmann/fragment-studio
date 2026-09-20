@@ -1,16 +1,65 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContainBlurImage } from "@/components/ContainBlurImage";
 import { ExamoraCover } from "@/components/ExamoraCover";
+import { JsonLd } from "@/components/JsonLd";
 import {
   getNextProject,
   getProject,
   getUpworkCase,
   projects,
 } from "@/lib/data";
+import { projectJsonLd, SITE_NAME } from "@/lib/seo";
 
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = getProject(slug);
+  if (!project) return { title: "Project" };
+
+  const upwork = getUpworkCase(slug);
+  const description = project.desc;
+  const url = `/work/${project.slug}`;
+  const images = upwork?.cover
+    ? [
+        {
+          url: upwork.cover,
+          width: 1420,
+          height: 1080,
+          alt: `${project.name} cover`,
+        },
+      ]
+    : undefined;
+
+  const socialTitle = `${project.name} — ${SITE_NAME}`;
+  const twitter: Metadata["twitter"] = {
+    card: "summary_large_image",
+    title: socialTitle,
+    description,
+  };
+  if (upwork?.cover) twitter.images = [upwork.cover];
+
+  return {
+    title: { absolute: `${project.name} — ${SITE_NAME}` },
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: socialTitle,
+      description: project.overview,
+      url,
+      type: "article",
+      ...(images ? { images } : {}),
+    },
+    twitter,
+  };
 }
 
 export default async function ProjectPage({
@@ -25,9 +74,11 @@ export default async function ProjectPage({
   const upwork = getUpworkCase(slug);
   const isExamora = slug === "examora";
   const hasPhotoCover = Boolean(upwork?.cover) && !isExamora;
+  const jsonLd = projectJsonLd(slug);
 
   return (
     <main>
+      {jsonLd ? <JsonLd json={jsonLd} /> : null}
       <section
         style={{
           maxWidth: 1480,

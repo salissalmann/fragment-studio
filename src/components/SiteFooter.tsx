@@ -56,7 +56,8 @@ export function SiteFooter() {
               flexWrap: "wrap",
             }}
           >
-            <div
+            <nav
+              aria-label="Footer"
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -88,7 +89,7 @@ export function SiteFooter() {
                   {item.label}
                 </Link>
               ))}
-            </div>
+            </nav>
 
             <div
               style={{

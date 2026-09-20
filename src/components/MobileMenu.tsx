@@ -49,6 +49,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         <button
           type="button"
           onClick={onClose}
+          aria-label="Close menu"
           className="mono"
           style={{
             fontSize: 11,
@@ -64,7 +65,10 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         </button>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <nav
+        aria-label="Mobile"
+        style={{ display: "flex", flexDirection: "column", gap: 4 }}
+      >
         {MENU_ITEMS.map((item, i) => (
           <Link
             key={item.href}
@@ -101,7 +105,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             </span>
           </Link>
         ))}
-      </div>
+      </nav>
 
       <div
         className="mono"

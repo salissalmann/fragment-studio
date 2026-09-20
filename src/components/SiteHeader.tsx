@@ -76,6 +76,7 @@ export function SiteHeader({ onMenuOpen }: SiteHeaderProps) {
       >
         <Link
           href="/"
+          aria-label="Fragment home"
           style={{
             display: "flex",
             alignItems: "baseline",
@@ -104,6 +105,7 @@ export function SiteHeader({ onMenuOpen }: SiteHeaderProps) {
         </Link>
 
         <nav
+          aria-label="Primary"
           style={{
             display: "flex",
             alignItems: "center",
@@ -123,6 +125,7 @@ export function SiteHeader({ onMenuOpen }: SiteHeaderProps) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className="mono nav-link hover-accent"
                   style={{
                     fontSize: 11,
