@@ -119,13 +119,13 @@ export function SiteFooter() {
                 LinkedIn ↗
               </a>
               <a
-                href={SOCIAL.github}
+                href={SOCIAL.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover-accent"
                 style={{ fontSize: 14.5, color: "var(--ink)" }}
               >
-                GitHub ↗
+                WhatsApp ↗
               </a>
             </div>
           </div>

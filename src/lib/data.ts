@@ -29,10 +29,10 @@ export type TeamMember = {
   github?: string;
 };
 
-/** Studio socials (footer) — Salis Salman */
+/** Studio socials (footer) — Fragment company */
 export const SOCIAL = {
-  linkedin: "https://www.linkedin.com/in/salis-salman",
-  github: "https://github.com/salissalmann",
+  linkedin: "https://www.linkedin.com/company/fragment-studio",
+  whatsapp: "https://wa.me/923200906066",
 } as const;
 
 export type Service = {
@@ -74,78 +74,92 @@ export const projects: Project[] = [
     slug: "premedpk",
     name: "PreMed.PK",
     cat: "PRODUCT",
-    cats: ["PRODUCT"],
+    cats: ["PRODUCT", "AI"],
     year: "2024",
     ratio: "16/10",
-    desc: "Large-scale medical entrance preparation platform serving a national student base.",
-    tech: ["Next.js", "Node", "PostgreSQL"],
+    desc: "Pakistan's premed learning platform — later Examora — rebuilt for national-scale practice, lessons, and progress.",
+    tech: ["Next.js", "NestJS", "MongoDB", "Qdrant", "React Native"],
     overview:
-      "A learning platform built around question banks, timed mocks and progress analytics, designed to stay responsive under heavy concurrent exam-season load.",
+      "Lead engineer on Pakistan's leading entrance-exam prep platform: a CRA React rebuild into Next.js and NestJS that holds up under national traffic, with a RAG study assistant and store apps. Public base of 100K+ students and around 70M question attempts.",
     problem:
-      "Exam-prep content was scattered across PDFs and ad-hoc groups, with no reliable way to practise under real test conditions or track weak areas over time.",
+      "A slow Create React App study product duplicated questions per deck and could not survive exam-season load — question screens sat around 20 seconds.",
     solution:
-      "A structured content model, a timed test engine and an analytics layer that turns every attempt into a signal students and mentors can act on.",
+      "Shared question references instead of per-deck copies, CDN images, a sliding-window fetch, Vercel ISR with a Redis-backed notes cache, Qdrant RAG over questions and textbooks, week-by-week topic recommendations, and GCP/AWS ops with Terraform and Ansible. React Native apps shipped with RevenueCat.",
     layers: [
-      { label: "CLIENT", nodes: ["Web app", "Mobile web", "Admin console"] },
-      { label: "SERVICES", nodes: ["Test engine", "Content API", "Analytics"] },
-      { label: "DATA", nodes: ["PostgreSQL", "Object storage", "Cache"] },
+      { label: "CLIENT", nodes: ["Next.js web", "iOS / Android", "Admin"] },
+      {
+        label: "SERVICES",
+        nodes: ["NestJS practice API", "RAG / Qdrant", "Topic recs"],
+      },
+      { label: "DATA", nodes: ["MongoDB replica", "Redis", "CDN / ISR"] },
     ],
     outcomes: [
-      "Single source of truth for exam content",
-      "Repeatable timed-test experience",
-      "Per-topic performance visibility for students",
+      "Question load time from ~20s to ~800ms",
+      "100K+ public students, ~70M question attempts",
+      "RAG answers grounded with topic and book citations",
+      "Apps live on the App Store and Google Play",
     ],
   },
   {
     slug: "ensemble",
-    name: "Ensemble",
+    name: "Ensemble.io",
     cat: "DATA",
-    cats: ["DATA", "INFRASTRUCTURE"],
+    cats: ["DATA", "INFRASTRUCTURE", "AI"],
     year: "2025",
     ratio: "4/3",
-    desc: "Industrial manufacturing data platform for machine and production telemetry.",
-    tech: ["React", "Python", "Time-series DB"],
+    desc: "Flux Foundry — industrial spare-parts standardization across plants and ERPs.",
+    tech: ["Python", "AWS", "Bedrock", "Terraform"],
     overview:
-      "An operations platform that ingests machine telemetry, normalises it across lines and surfaces production state to plant and management users.",
+      "Tenant-scoped Bronze → Silver → Gold ingest for Ensemble's Flux Foundry: raw ERP exports become a canonical, explainable parts graph that engineers can query and trust.",
     problem:
-      "Production data lived inside isolated machine controllers and spreadsheets, so downtime and throughput questions could only be answered after the fact.",
+      "Spare-parts records were inconsistent and duplicated across plants and ERPs, so there was no single catalog anyone could stand behind.",
     solution:
-      "An ingestion pipeline with a normalised equipment model, plus dashboards and thresholds that make line state legible in near real time.",
+      "An event-driven Loader / Processor / Enricher / Matcher on Lambda and SQS. Enrichment V2 uses Bedrock, a DynamoDB cache, AppConfig version pins, and ISO 14224 attributes, with a truth ladder that fails weak rows closed. Gold projects into Aurora and a graph for duplicate and equivalent resolution.",
     layers: [
-      { label: "EDGE", nodes: ["Machine agents", "Protocol adapters"] },
-      { label: "PIPELINE", nodes: ["Ingest", "Normalise", "Aggregate"] },
-      { label: "SURFACE", nodes: ["Dashboards", "Alerts", "Exports"] },
+      { label: "INGEST", nodes: ["AppFlow", "S3 Bronze", "Quarantine"] },
+      {
+        label: "PIPELINE",
+        nodes: ["Lambda / SQS", "Bedrock enrich", "Entity match"],
+      },
+      {
+        label: "SURFACE",
+        nodes: ["Aurora / graph", "Foundry Apps", "Reliability"],
+      },
     ],
     outcomes: [
-      "Unified equipment data model",
-      "Near real-time line visibility",
-      "Historical analysis without manual collation",
+      "Canonical, tenant-aware parts graph",
+      "Weak rows fail closed instead of hallucinated metadata",
+      "ISO 14224-aligned attributes with version pins",
+      "Terraform modules and CloudWatch triage for Bedrock and cache",
     ],
   },
   {
     slug: "fairticket",
-    name: "FairTicket",
+    name: "Fair Ticket",
     cat: "PRODUCT",
     cats: ["PRODUCT"],
     year: "2024",
     ratio: "16/10",
-    desc: "Ticketing and resale marketplace with inventory, checkout and entry validation.",
-    tech: ["Next.js", "Payments", "Redis"],
+    desc: "Austrian ticketing marketplace — edge booking, live seatmaps, Stripe Connect, two store apps.",
+    tech: ["Next.js", "Cloudflare Workers", "Stripe Connect", "React Native"],
     overview:
-      "A two-sided ticketing product covering listing, inventory locking, checkout and on-door validation.",
+      "End-to-end marketplace for independent Austrian organizers: German-language booking on Cloudflare's edge, interactive D3 stadium seatmaps, Stripe Connect vendor payouts, and companion fan and vendor apps.",
     problem:
-      "Resale flows tend to break under contention: two buyers, one seat. Trust and correctness both depend on how inventory is held.",
+      "Seat inventory breaks under contention, and vendors need KYC'd payouts after a platform cut — a seat can only be sold once, without a busy-wait lock poller.",
     solution:
-      "Short-lived inventory holds, idempotent checkout and signed entry tokens, so a ticket can only be sold and scanned once.",
+      "Hono on Cloudflare Workers with QStash async jobs and R2 media. Adding a seat to a cart schedules a short-lived lock and its own release, so unpaid holds free themselves. D3 seatmaps with zoom and select; Stripe Connect KYC for vendor onboarding.",
     layers: [
-      { label: "BUYER", nodes: ["Discovery", "Checkout", "Wallet"] },
-      { label: "CORE", nodes: ["Inventory locks", "Payments", "Entry tokens"] },
-      { label: "OPS", nodes: ["Organiser tools", "Scanning app"] },
+      { label: "BUYER", nodes: ["Marketplace", "D3 seatmaps", "Fan app"] },
+      {
+        label: "CORE",
+        nodes: ["Workers booking", "QStash locks", "Stripe Connect"],
+      },
+      { label: "OPS", nodes: ["Vendor tooling", "Vendor app", "R2 media"] },
     ],
     outcomes: [
-      "Contention-safe checkout path",
-      "Single-use validated entry",
-      "Organiser-side inventory control",
+      "Contention-safe checkout window without a poller",
+      "Stripe Connect payouts with KYC for organizers",
+      "Fan and vendor apps on the App Store and Google Play",
     ],
   },
   {
@@ -155,23 +169,24 @@ export const projects: Project[] = [
     cats: ["PRODUCT", "AUTOMATION"],
     year: "2025",
     ratio: "4/3",
-    desc: "Ops platform for cleaning teams — day planner, quotes, SMS, and live schedules.",
-    tech: ["Next.js", "Node", "SMS"],
+    desc: "Pulse and Hygeia — booking, AI-routed day plans, and capability-gated ops for a UK cleaning company.",
+    tech: ["Next.js", "Flask", "Supabase", "n8n"],
     overview:
-      "Pulse — an operations platform that keeps cleaning crews, quotes and day schedules in one place instead of scattered chats and spreadsheets.",
+      "Backends for Pulse (quotes, bookings, AI day planner, Twilio SMS) and Hygeia (invite-only ops with rotating JWTs, ServiceM8 revenue, PeopleHR write-back).",
     problem:
-      "Field teams lived in group texts and paper run sheets, so dispatch, quoting and status updates constantly drifted out of sync.",
+      "Quotes, routes, ServiceM8 invoices, and PeopleHR lived in separate tools, so dispatch and status drifted and someone had to chase both sides by phone.",
     solution:
-      "A shared day planner with quote flows, SMS touchpoints and live schedule state that both office and field can trust.",
+      "Flask-proxied Pulse APIs with an AI planner that sequences jobs by route, not booking order, plus Twilio heads-up SMS. n8n syncs ServiceM8 and PeopleHR. Hygeia adds httpOnly refresh rotation, reuse detection, and capability roles (MD, Accounts, Ops).",
     layers: [
-      { label: "OPS", nodes: ["Day planner", "Quotes", "Crew roster"] },
-      { label: "COMMS", nodes: ["SMS", "Notifications", "Status updates"] },
-      { label: "DATA", nodes: ["Schedules", "Clients", "Jobs"] },
+      { label: "OPS", nodes: ["Quotes / bookings", "AI day planner", "Portal"] },
+      { label: "COMMS", nodes: ["Twilio SMS", "n8n workflows", "Digests"] },
+      { label: "DATA", nodes: ["Supabase Postgres", "ServiceM8", "PeopleHR"] },
     ],
     outcomes: [
-      "Single source of truth for daily routes",
-      "Faster quote-to-job handoff",
-      "Live visibility for office and field",
+      "Cleaner days sequenced by practical route, including supply pickups",
+      "Automated SMS as pickup and arrival windows approach",
+      "ServiceM8 and PeopleHR sync that used to be manual",
+      "Invite-only Hygeia with rotating refresh tokens",
     ],
   },
   {
@@ -181,52 +196,54 @@ export const projects: Project[] = [
     cats: ["AUTOMATION", "DATA"],
     year: "2025",
     ratio: "16/10",
-    desc: "Business workflow and ERP automation across quoting, approvals and operations.",
-    tech: ["Node", "Queues", "Integrations"],
+    desc: "Finance and HR ERP cutover onto ERPNext — data migration, custom workflows, and hardened AWS ops.",
+    tech: ["ERPNext", "Python", "AWS EC2", "MariaDB"],
     overview:
-      "An automation layer sitting between existing business systems, moving work through defined states instead of email threads.",
+      "For a US AI studio's client: mapped chart of accounts, payroll, and employee records onto ERPNext, built custom Frappe doctypes, and ran production on a locked-down EC2 stack.",
     problem:
-      "Operational work crossed four systems with manual re-entry at every boundary, making status unknowable and errors routine.",
+      "Payroll, employee records, and approvals sat in spreadsheets and legacy tools, with double entry between finance and HR.",
     solution:
-      "Event-driven workflows with typed integrations, retries and an audit trail for every state transition.",
+      "Custom ERPNext doctypes and server scripts tying invoicing to HR. Validation-gated employee migration so payroll survived cutover. Role-based approval chains matching real sign-off. Bastion-only SSH, automated MariaDB backups, cron reports, and audit-traced migration steps.",
     layers: [
-      { label: "TRIGGERS", nodes: ["Forms", "Webhooks", "Schedules"] },
-      {
-        label: "ENGINE",
-        nodes: ["Workflow runtime", "Queues", "Retries", "Audit log"],
-      },
-      { label: "SYSTEMS", nodes: ["ERP", "CRM", "Accounting"] },
+      { label: "MIGRATE", nodes: ["Chart of accounts", "Payroll", "Employees"] },
+      { label: "ENGINE", nodes: ["Frappe doctypes", "Approvals", "Cron"] },
+      { label: "OPS", nodes: ["EC2", "Nginx", "MariaDB backups"] },
     ],
     outcomes: [
-      "Eliminated manual re-entry between systems",
-      "Auditable state for every process run",
-      "Failure isolation through queued retries",
+      "Cutover without freezing payroll or HR",
+      "Invoicing and HR on one ERPNext model",
+      "Hardened AWS deploy with automated backups",
+      "Post-cutover support through the first close cycles",
     ],
   },
   {
     slug: "ale",
-    name: "ALE Technologies",
+    name: "Elite Health Care",
     cat: "HEALTHCARE",
     cats: ["PRODUCT", "INFRASTRUCTURE"],
     year: "2025",
     ratio: "4/3",
-    desc: "Production scheduling for Elite Health — React, Azure, Service Bus, and audit-ready flows.",
-    tech: ["React", "Azure", "Service Bus"],
+    desc: "ALE clinical and scheduling product plus AgencySync — EVV, authorizations, and remittance-accurate billing.",
+    tech: ["Vue", "React", "Azure", "Service Bus"],
     overview:
-      "Schedule Manager — a cloud scheduling system for Elite Health that keeps production calendars, capacity and audit trails in sync across teams.",
+      "Homecare operations for Elite Health Care (ALE Technologies): patients, dual-entity scheduling, OASIS forms, and EVV on the Vue product, plus Schedule Manager / AgencySync for authorizations, billing reconciliation, and remittance allocation.",
     problem:
-      "Scheduling lived in disconnected tools with no reliable handoff between planners and the floor, so changes were slow and hard to audit.",
+      "Authorizations, EVV clock-ins, and remittance allocation drifted apart, so billing errors showed up after month-end instead of before.",
     solution:
-      "A React front end on Azure with Service Bus–driven updates, role-aware workflows and an audit log for every schedule change.",
+      "Nightly Azure Functions for EVV missed clock-in/out sweeps. Bulk EMR imports (WellSky, ALE) and remittance jobs on Service Bus with retry and dead letters so imports never block the live scheduling API. Daily cron comparing authorization units consumed vs billed.",
     layers: [
-      { label: "CLIENT", nodes: ["Schedule UI", "Role views", "Approvals"] },
-      { label: "CLOUD", nodes: ["Azure APIs", "Service Bus", "Auth"] },
-      { label: "OPS", nodes: ["Capacity", "Audit trail", "Notifications"] },
+      { label: "CLINICAL", nodes: ["Vue SPA", "Scheduler", "OASIS / EVV"] },
+      {
+        label: "CLOUD",
+        nodes: ["Python services", "Azure Functions", "Service Bus"],
+      },
+      { label: "BILLING", nodes: ["Auth units", "Remittance", "AgencySync"] },
     ],
     outcomes: [
-      "Shared production calendar across teams",
-      "Event-driven schedule updates",
-      "Audit-ready change history",
+      "EVV gaps flagged before they reach billing",
+      "Large imports isolated from the live scheduling API",
+      "Daily auth-consumed vs billed reconciliation",
+      "AgencySync in production and QA",
     ],
   },
   {
@@ -236,33 +253,86 @@ export const projects: Project[] = [
     cats: ["PRODUCT"],
     year: "2026",
     ratio: "16/10",
-    desc: "Engineering entrance preparation platform with practice, mocks and revision paths.",
-    tech: ["React Native", "Node", "PostgreSQL"],
+    desc: "Later PreMed.PK product line — engineering and medical entrance prep on web and mobile.",
+    tech: ["React Native", "Next.js", "NestJS", "RevenueCat"],
     overview:
-      "A mobile-first preparation product for engineering entrance candidates, built around short practice loops and spaced revision.",
+      "Examora is the later brand of the PreMed.PK platform: the same practice, notes, and progress systems, with store apps and an engineering-entrance track on top of the national medical prep base.",
     problem:
-      "Preparation happens in fragments of time on a phone, but most material assumes long desktop study sessions.",
+      "Preparation happens in short sessions on a phone, but the original product assumed long desktop study — and the engineering paper needed its own mocks and revision paths.",
     solution:
-      "Small offline-capable practice units, a revision scheduler and mock tests that mirror the real paper structure.",
+      "React Native apps with RevenueCat, the rebuilt Next.js / NestJS practice engine, and week-by-week topic recommendations driven by schedule and engagement rather than random content.",
     layers: [
       { label: "APP", nodes: ["Practice", "Mocks", "Revision"] },
-      { label: "SERVICES", nodes: ["Scheduler", "Content API", "Scoring"] },
-      { label: "DATA", nodes: ["PostgreSQL", "Sync store"] },
+      { label: "SERVICES", nodes: ["NestJS API", "Recs", "Subscriptions"] },
+      { label: "STORE", nodes: ["App Store", "Play Store", "RevenueCat"] },
     ],
     outcomes: [
-      "Offline-capable practice sessions",
-      "Spaced revision scheduling",
-      "Exam-accurate mock structure",
+      "Store apps shipping as the later PreMed surface",
+      "Engineering and medical tracks on one practice engine",
+      "Topic recommendations from schedule and engagement",
+    ],
+  },
+  {
+    slug: "careercrafter",
+    name: "CareerCrafter",
+    cat: "AI",
+    cats: ["AI", "AUTOMATION"],
+    year: "2025",
+    ratio: "16/10",
+    desc: "Agentic job-apply pipeline — profile to ranked roles to browser agents that submit applications.",
+    tech: ["Python", "SQS", "Fargate", "DynamoDB"],
+    overview:
+      "CareerCrafter (Broomstick.AI) builds a structured candidate profile, ranks roles worth applying to, then runs browser-use agents that log in, solve captchas, fill multi-step forms, and submit — on a fully serverless AWS backend.",
+    problem:
+      "Applying is a grind of logins, captchas, and role-specific questions. Generic autofill cannot answer them, and a failed selector used to kill the whole run.",
+    solution:
+      "Resume intake into a knowledge base, interest-ranked queues, SQS fan-out to Fargate workers with 2Captcha and bounded retries. Per-application state in DynamoDB, EventBridge re-scans that skip already-actioned postings, Secrets Manager for site creds, SES batch summaries.",
+    layers: [
+      { label: "INTAKE", nodes: ["Profile KB", "Ranked recs", "Amplify UI"] },
+      { label: "AGENTS", nodes: ["SQS", "Fargate / browser-use", "2Captcha"] },
+      { label: "AWS", nodes: ["Lambda", "DynamoDB", "EventBridge / SES"] },
+    ],
+    outcomes: [
+      "Live queued → in progress → submitted / failed state",
+      "Failed captchas and stale selectors requeue instead of dying",
+      "No duplicate applies on already-actioned postings",
+      "Credentials injected at runtime, not baked into images",
+    ],
+  },
+  {
+    slug: "shotton-mill",
+    name: "Shotton Mill",
+    cat: "DATA",
+    cats: ["DATA", "AI"],
+    year: "2026",
+    ratio: "4/3",
+    desc: "P&ID to SAP hierarchy — DWG tags classified with CAD rules and Bedrock vision, exported as FLOC workbooks.",
+    tech: ["Python", "ezdxf", "Bedrock", "SAP FLOC"],
+    overview:
+      "Ensemble client engagement at a UK paper and tissue mill: a standalone pipeline that opens AutoCAD P&IDs, classifies tags, assigns functional-location addresses from mill maps, and exports SAP-ready equipment and FLOC workbooks.",
+    problem:
+      "Every pump, valve, motor, and line has to land in SAP as a strict site → line → process → function → equipment tree. Tags already exist on drawings across Valmet, GOR, and KSD numbering — nobody wants to retype hundreds of them.",
+    solution:
+      "Orchestrated convert → vision → sheet brief → reconcile → equipment → SAP Excel, with mill standards vendored. Multi-OEM grammars into one hierarchy. A vision lane crops each tag, classifies subtypes against the mill legend, and feeds SAP description (EQKTX) rules. FLOC from tag-prefix mill maps, not drawing titles.",
+    layers: [
+      { label: "CAD", nodes: ["DWG parse", "Valmet / GOR / KSD"] },
+      { label: "VISION", nodes: ["Tag crop", "Bedrock classify", "Legend"] },
+      { label: "SAP", nodes: ["FLOC tree", "Excel export", "Reasoning audit"] },
+    ],
+    outcomes: [
+      "~89% function find and ~88% sub-process placement on Broke System",
+      "~70% equipment tag find; parent attachment still the hard residual",
+      "Loadable SAP sheets with POSNR, EQART, work centre, EQKTX",
     ],
   },
 ];
 
-/** Featured work order from design: PROJECTS indices 0, 3, 1, 5, 2 */
+/** Featured work: scale, ops SaaS, industrial data, agents, marketplace */
 export const FEATURED_SLUGS = [
   "premedpk",
   "hashtagclean",
   "ensemble",
-  "examora",
+  "careercrafter",
   "fairticket",
 ] as const;
 
@@ -530,6 +600,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Work", href: "/work" },
   { label: "Services", href: "/services" },
   { label: "Team", href: "/team" },
+  { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -549,7 +620,7 @@ export const upworkCases: UpworkCase[] = [
     slug: "premedpk",
     name: "PreMed.PK",
     tag: "PRODUCT · EDTECH",
-    blurb: "National exam-prep platform — web, mobile, and the content engine behind them.",
+    blurb: "National exam-prep rebuild — 100K+ students, ~70M attempts, RAG study search, store apps.",
     cover: "/upwork/premedpk/cover.png",
     images: [
       "/upwork/premedpk/image-1.png",
@@ -560,9 +631,9 @@ export const upworkCases: UpworkCase[] = [
   },
   {
     slug: "ensemble",
-    name: "Ensemble · Flux Foundry",
+    name: "Ensemble.io · Flux Foundry",
     tag: "DATA · AI",
-    blurb: "Medallion pipeline on AWS — raw parts data to searchable, enriched identities.",
+    blurb: "Bronze–Silver–Gold spare-parts pipeline — Bedrock enrich, ISO 14224, tenant-aware graph.",
     cover: "/upwork/ensemble/cover.png",
     images: [
       "/upwork/ensemble/image-1.png",
@@ -572,18 +643,18 @@ export const upworkCases: UpworkCase[] = [
   },
   {
     slug: "ale",
-    name: "ALE Technologies",
+    name: "Elite Health Care",
     tag: "HEALTHCARE · CLOUD",
-    blurb: "Production scheduling for Elite Health — React, Azure, Service Bus, and audit-ready flows.",
+    blurb: "ALE clinical/scheduling plus AgencySync — EVV sweeps, authorizations, remittance billing.",
     cover: "/upwork/ale/cover.png",
     images: ["/upwork/ale/image-1.png", "/upwork/ale/image-2.png"],
     href: "/work/ale",
   },
   {
     slug: "fairticket",
-    name: "FairTicket",
+    name: "Fair Ticket",
     tag: "PRODUCT · MARKETPLACE",
-    blurb: "Ticketing and resale — discovery, seats, checkout, and validated entry.",
+    blurb: "Austrian marketplace — Workers booking, D3 seatmaps, Stripe Connect, fan and vendor apps.",
     cover: "/upwork/fairticket/cover.png",
     images: [
       "/upwork/fairticket/image-1.jpg",
@@ -596,7 +667,7 @@ export const upworkCases: UpworkCase[] = [
     slug: "hashtagclean",
     name: "Hashtag Clean · Pulse",
     tag: "SAAS · OPERATIONS",
-    blurb: "Ops platform for cleaning teams — day planner, quotes, SMS, and live schedules.",
+    blurb: "Pulse and Hygeia — AI-routed day plans, Twilio SMS, ServiceM8 and PeopleHR sync.",
     cover: "/upwork/hashtagclean/cover.png",
     images: [
       "/upwork/hashtagclean/image-1.png",
@@ -608,8 +679,8 @@ export const upworkCases: UpworkCase[] = [
   {
     slug: "antematter",
     name: "Antematter",
-    tag: "AI · AGENTS",
-    blurb: "Antifragile AI agents for knowledge orgs — strategy, engineering, and shipping.",
+    tag: "ERP · AUTOMATION",
+    blurb: "Finance and HR cutover onto ERPNext — migration, custom Frappe workflows, hardened AWS.",
     cover: "/upwork/antematter/cover.png",
     images: [
       "/upwork/antematter/image-1.png",

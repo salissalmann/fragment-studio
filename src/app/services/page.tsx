@@ -759,7 +759,7 @@ export default function ServicesPage() {
             textDecoration: "none",
           }}
         >
-          Start a project →
+          Book a demo →
         </Link>
       </section>
 
