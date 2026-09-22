@@ -45,6 +45,12 @@ export const PAGES = {
       "Book a 30-minute discovery call with Fragment. Tell us what you are building and we will figure out the next step together.",
     path: "/contact",
   },
+  careers: {
+    title: "Careers",
+    description:
+      "Join Fragment — a small engineering studio that ships real products. Open roles in engineering, business development, and creative.",
+    path: "/careers",
+  },
 } as const;
 
 export function absoluteUrl(path = "/") {
@@ -119,11 +125,11 @@ export function organizationJsonLd() {
           "@type": "Person",
           name: "Salis Salman",
           jobTitle: "Founder · Principal Engineer",
-          url: SOCIAL.linkedin,
-          sameAs: [SOCIAL.linkedin, SOCIAL.github],
+          url: team[0]?.linkedin,
+          sameAs: team[0]?.linkedin ? [team[0].linkedin] : undefined,
         },
         numberOfEmployees: team.length,
-        sameAs: [SOCIAL.linkedin, SOCIAL.github],
+        sameAs: [SOCIAL.linkedin, SOCIAL.whatsapp],
         knowsAbout: services.map((s) => s.title),
         areaServed: { "@type": "Place", name: "Worldwide" },
         serviceType: services.map((s) => s.title),

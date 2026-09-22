@@ -74,192 +74,180 @@ export default async function ProjectPage({
   const upwork = getUpworkCase(slug);
   const isExamora = slug === "examora";
   const hasPhotoCover = Boolean(upwork?.cover) && !isExamora;
+  const hasVisualCover = hasPhotoCover || isExamora;
+  const screenshots = upwork?.images ?? [];
   const jsonLd = projectJsonLd(slug);
 
   return (
     <main>
       {jsonLd ? <JsonLd json={jsonLd} /> : null}
+
+      {/* ── Hero ── */}
       <section
         style={{
+          position: "relative",
+          overflow: "hidden",
           maxWidth: 1480,
           margin: "0 auto",
           padding:
-            "clamp(32px, 5vw, 70px) clamp(18px, 4.5vw, 64px) clamp(28px, 4vw, 50px)",
+            "clamp(32px,5vw,64px) clamp(18px,4.5vw,64px) clamp(28px,3.8vw,48px)",
         }}
       >
-        <Link
-          href="/work"
-          className="mono hover-accent"
+        {/* Category watermark — large, barely visible, specific to each project type */}
+        <div
+          aria-hidden="true"
           style={{
-            fontSize: 10.5,
-            letterSpacing: "0.16em",
-            color: "var(--mono)",
-            textDecoration: "none",
+            position: "absolute",
+            top: "-0.06em",
+            right: "-0.02em",
+            fontSize: "clamp(110px,17vw,250px)",
+            fontWeight: 600,
+            letterSpacing: "-0.05em",
+            lineHeight: 1,
+            color: "var(--ink)",
+            opacity: 0.038,
+            userSelect: "none",
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
           }}
         >
-          ← ALL WORK
-        </Link>
+          {project.cats[0]}
+        </div>
+
+        {/* Top row: back link + meta */}
         <div
           style={{
             display: "flex",
-            flexWrap: "wrap",
-            gap: 20,
-            alignItems: "flex-end",
+            alignItems: "center",
             justifyContent: "space-between",
-            marginTop: "clamp(26px, 4vw, 48px)",
+            flexWrap: "wrap",
+            gap: 16,
+            marginBottom: "clamp(34px,4.8vw,60px)",
           }}
         >
-          <h1
+          <Link
+            href="/work"
+            className="mono hover-accent"
             style={{
-              fontSize: "clamp(40px, 7vw, 104px)",
-              lineHeight: 0.94,
-              letterSpacing: "-0.04em",
-              fontWeight: 500,
-              margin: 0,
+              fontSize: 10.5,
+              letterSpacing: "0.16em",
+              color: "var(--mono)",
+              textDecoration: "none",
             }}
           >
-            {project.name}
-            <span style={{ color: "var(--accent)" }}>.</span>
-          </h1>
+            ← ALL WORK
+          </Link>
           <div
             className="mono"
             style={{
               display: "flex",
-              gap: 24,
+              gap: 16,
               fontSize: 10.5,
               letterSpacing: "0.16em",
-              color: "var(--mono)",
+              alignItems: "center",
+              flexWrap: "wrap",
             }}
           >
-            <span>{project.cat}</span>
-            <span>{project.year}</span>
+            {project.cats.map((c) => (
+              <span key={c} style={{ color: "var(--accent)" }}>
+                {c}
+              </span>
+            ))}
+            <span
+              style={{
+                width: 3,
+                height: 3,
+                background: "rgba(var(--ink-rgb),0.2)",
+                display: "inline-block",
+                borderRadius: "50%",
+              }}
+            />
+            <span style={{ color: "var(--faint)" }}>{project.year}</span>
           </div>
         </div>
-        <p
+
+        {/* Project title */}
+        <h1
           style={{
-            margin: "clamp(20px, 3vw, 30px) 0 0",
-            fontSize: "clamp(16px, 1.5vw, 22px)",
-            lineHeight: 1.55,
-            color: "var(--ink)",
-            maxWidth: "56ch",
+            fontSize: "clamp(52px,8.8vw,124px)",
+            lineHeight: 0.91,
+            letterSpacing: "-0.045em",
+            fontWeight: 500,
+            margin: "0 0 clamp(28px,3.6vw,46px)",
+            maxWidth: "14ch",
+            position: "relative",
           }}
         >
-          {project.overview}
-        </p>
-      </section>
+          {project.name}
+          <span style={{ color: "var(--accent)" }}>.</span>
+        </h1>
 
-      <section
-        style={{
-          maxWidth: 1480,
-          margin: "0 auto",
-          padding: "0 clamp(18px, 4.5vw, 64px) clamp(34px, 5vw, 60px)",
-        }}
-      >
+        {/* Overview + tech — side by side */}
         <div
           style={{
-            position: "relative",
-            background: "var(--tile)",
-            aspectRatio: hasPhotoCover ? "16 / 9" : "21/9",
-            minHeight: 220,
-            overflow: "hidden",
-            border: "1px solid rgba(var(--ink-rgb),0.12)",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "clamp(24px,4vw,64px)",
+            alignItems: "flex-start",
           }}
         >
-          {isExamora ? (
-            <ExamoraCover label="EXAMORA" />
-          ) : hasPhotoCover ? (
-            <ContainBlurImage
-              src={upwork!.cover}
-              alt={`${project.name} cover`}
-              priority
-              sizes="(max-width: 1480px) 100vw, 1480px"
-            />
-          ) : (
-            <>
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  opacity: 0.7,
-                  backgroundImage:
-                    "linear-gradient(rgba(var(--ink-rgb),0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--ink-rgb),0.06) 1px, transparent 1px)",
-                  backgroundSize: "40px 40px",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                }}
-              >
-                <span
-                  style={{
-                    width: 44,
-                    height: 110,
-                    background: "rgba(var(--ink-rgb),0.8)",
-                    display: "block",
-                  }}
-                />
-                <span
-                  style={{
-                    width: 44,
-                    height: 64,
-                    background: "var(--accent)",
-                    display: "block",
-                  }}
-                />
-                <span
-                  style={{
-                    width: 44,
-                    height: 140,
-                    background: "rgba(var(--ink-rgb),0.28)",
-                    display: "block",
-                  }}
-                />
-                <span
-                  style={{
-                    width: 44,
-                    height: 88,
-                    background: "rgba(var(--ink-rgb),0.8)",
-                    display: "block",
-                  }}
-                />
-              </div>
-            </>
-          )}
-          {!isExamora && (
+          <p
+            style={{
+              flex: "1 1 340px",
+              fontSize: "clamp(16px,1.52vw,21px)",
+              lineHeight: 1.58,
+              color: "var(--muted)",
+              maxWidth: "54ch",
+              margin: 0,
+            }}
+          >
+            {project.overview}
+          </p>
+          <div
+            style={{
+              flex: "0 0 auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: 14,
+            }}
+          >
             <span
               className="mono"
               style={{
-                position: "absolute",
-                bottom: 12,
-                left: 14,
                 fontSize: 9.5,
-                letterSpacing: "0.16em",
-                color: hasPhotoCover
-                  ? "rgba(250,249,244,0.7)"
-                  : "var(--faint)",
-                textShadow: hasPhotoCover
-                  ? "0 1px 3px rgba(0,0,0,0.6)"
-                  : undefined,
+                letterSpacing: "0.22em",
+                color: "var(--faint)",
               }}
             >
-              {hasPhotoCover ? "COVER" : "PROJECT VISUAL"}
+              TECHNOLOGIES
             </span>
-          )}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+              {project.tech.map((t) => (
+                <span
+                  key={t}
+                  className="mono"
+                  style={{
+                    border: "1px solid rgba(var(--ink-rgb),0.18)",
+                    padding: "8px 13px",
+                    fontSize: 10.5,
+                    letterSpacing: "0.09em",
+                    color: "var(--ink)",
+                  }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
+      {/* ── Cover + Problem / Solution ── */}
       <section
         style={{
           maxWidth: 1480,
           margin: "0 auto",
-          padding: "0 clamp(18px, 4.5vw, 64px) clamp(36px, 5vw, 66px)",
-          animation: "fragUp .75s cubic-bezier(.2,.7,.2,1) both",
+          padding: "0 clamp(18px,4.5vw,64px) clamp(40px,5.5vw,68px)",
         }}
       >
         <div
@@ -267,82 +255,194 @@ export default async function ProjectPage({
             display: "flex",
             flexWrap: "wrap",
             gap: 1,
-            background: "rgba(var(--ink-rgb),0.14)",
+            background: "rgba(var(--ink-rgb),0.12)",
           }}
         >
-          <div
-            style={{
-              flex: "1 1 320px",
-              minWidth: 0,
-              background: "var(--bg)",
-              padding: "clamp(20px, 2.6vw, 34px)",
-            }}
-          >
-            <span
-              className="mono"
+          {/* Cover image — shown when available */}
+          {hasVisualCover && (
+            <div
               style={{
-                fontSize: 10,
-                letterSpacing: "0.18em",
-                color: "var(--accent)",
+                flex: "1.2 1 320px",
+                minWidth: 0,
+                position: "relative",
+                minHeight: 340,
+                maxHeight: 500,
+                overflow: "hidden",
+                background: "var(--tile)",
               }}
             >
-              THE PROBLEM
-            </span>
-            <p
+              {isExamora ? (
+                <ExamoraCover label="EXAMORA" />
+              ) : (
+                <ContainBlurImage
+                  src={upwork!.cover}
+                  alt={`${project.name} cover`}
+                  priority
+                  sizes="(max-width: 800px) 100vw, 55vw"
+                />
+              )}
+            </div>
+          )}
+
+          {/* Problem + Solution stacked when beside cover; side by side when no cover */}
+          {hasVisualCover ? (
+            <div
               style={{
-                margin: "16px 0 0",
-                fontSize: "clamp(15px, 1.2vw, 18px)",
-                lineHeight: 1.6,
-                color: "var(--muted)",
+                flex: "1 1 260px",
+                minWidth: 0,
+                background: "var(--bg)",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              {project.problem}
-            </p>
-          </div>
-          <div
-            style={{
-              flex: "1 1 320px",
-              minWidth: 0,
-              background: "var(--bg)",
-              padding: "clamp(20px, 2.6vw, 34px)",
-            }}
-          >
-            <span
-              className="mono"
-              style={{
-                fontSize: 10,
-                letterSpacing: "0.18em",
-                color: "var(--accent)",
-              }}
-            >
-              THE SOLUTION
-            </span>
-            <p
-              style={{
-                margin: "16px 0 0",
-                fontSize: "clamp(15px, 1.2vw, 18px)",
-                lineHeight: 1.6,
-                color: "var(--muted)",
-              }}
-            >
-              {project.solution}
-            </p>
-          </div>
+              <div
+                style={{
+                  flex: 1,
+                  padding: "clamp(26px,3vw,42px)",
+                  borderBottom: "1px solid rgba(var(--ink-rgb),0.1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 18,
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: 9.5,
+                    letterSpacing: "0.22em",
+                    color: "var(--accent)",
+                  }}
+                >
+                  THE PROBLEM
+                </span>
+                <p
+                  style={{
+                    fontSize: "clamp(14.5px,1.15vw,17px)",
+                    lineHeight: 1.7,
+                    color: "var(--muted)",
+                    margin: 0,
+                  }}
+                >
+                  {project.problem}
+                </p>
+              </div>
+              <div
+                style={{
+                  flex: 1,
+                  padding: "clamp(26px,3vw,42px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 18,
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: 9.5,
+                    letterSpacing: "0.22em",
+                    color: "var(--accent)",
+                  }}
+                >
+                  THE SOLUTION
+                </span>
+                <p
+                  style={{
+                    fontSize: "clamp(14.5px,1.15vw,17px)",
+                    lineHeight: 1.7,
+                    color: "var(--muted)",
+                    margin: 0,
+                  }}
+                >
+                  {project.solution}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div
+                style={{
+                  flex: "1 1 300px",
+                  minWidth: 0,
+                  background: "var(--bg)",
+                  padding: "clamp(26px,3vw,42px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 18,
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: 9.5,
+                    letterSpacing: "0.22em",
+                    color: "var(--accent)",
+                  }}
+                >
+                  THE PROBLEM
+                </span>
+                <p
+                  style={{
+                    fontSize: "clamp(15px,1.2vw,18px)",
+                    lineHeight: 1.68,
+                    color: "var(--muted)",
+                    margin: 0,
+                    maxWidth: "48ch",
+                  }}
+                >
+                  {project.problem}
+                </p>
+              </div>
+              <div
+                style={{
+                  flex: "1 1 300px",
+                  minWidth: 0,
+                  background: "var(--bg)",
+                  padding: "clamp(26px,3vw,42px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 18,
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: 9.5,
+                    letterSpacing: "0.22em",
+                    color: "var(--accent)",
+                  }}
+                >
+                  THE SOLUTION
+                </span>
+                <p
+                  style={{
+                    fontSize: "clamp(15px,1.2vw,18px)",
+                    lineHeight: 1.68,
+                    color: "var(--muted)",
+                    margin: 0,
+                    maxWidth: "48ch",
+                  }}
+                >
+                  {project.solution}
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
+      {/* ── Architecture ── */}
       <section
         style={{
           background: "var(--dark)",
           color: "var(--ondark)",
-          padding: "clamp(40px, 6vw, 86px) 0",
+          padding: "clamp(40px,6vw,86px) 0",
         }}
       >
         <div
           style={{
             maxWidth: 1480,
             margin: "0 auto",
-            padding: "0 clamp(18px, 4.5vw, 64px)",
+            padding: "0 clamp(18px,4.5vw,64px)",
           }}
         >
           <div
@@ -352,13 +452,13 @@ export default async function ProjectPage({
               gap: 20,
               alignItems: "flex-end",
               justifyContent: "space-between",
-              marginBottom: "clamp(28px, 4vw, 48px)",
+              marginBottom: "clamp(30px,4.2vw,54px)",
             }}
           >
             <h2
               style={{
                 margin: 0,
-                fontSize: "clamp(26px, 3.6vw, 48px)",
+                fontSize: "clamp(26px,3.6vw,48px)",
                 letterSpacing: "-0.03em",
                 fontWeight: 500,
               }}
@@ -370,102 +470,206 @@ export default async function ProjectPage({
               style={{
                 fontSize: 10,
                 letterSpacing: "0.18em",
-                color: "rgba(var(--ondark-rgb),0.4)",
+                color: "rgba(var(--ondark-rgb),0.36)",
               }}
             >
               FRAGMENTS → SYSTEM
             </span>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {project.layers.map((l) => (
+
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {project.layers.map((l, li) => (
               <div
                 key={l.label}
                 style={{
                   display: "flex",
                   flexWrap: "wrap",
-                  gap: "clamp(14px, 3vw, 40px)",
-                  alignItems: "center",
-                  padding: "clamp(18px, 2.4vw, 30px) 0",
-                  borderTop: "1px solid rgba(var(--ondark-rgb),0.16)",
+                  gap: "clamp(14px,3vw,40px)",
+                  alignItems: "flex-start",
+                  padding: "clamp(20px,2.6vw,32px) 0",
+                  borderTop: "1px solid rgba(var(--ondark-rgb),0.12)",
                 }}
               >
-                <span
-                  className="mono"
+                <div
                   style={{
-                    flex: "0 0 96px",
-                    fontSize: 10,
-                    letterSpacing: "0.2em",
-                    color: "var(--accent)",
+                    flex: "0 0 112px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                    paddingTop: 3,
                   }}
                 >
-                  {l.label}
-                </span>
+                  <span
+                    className="mono"
+                    style={{
+                      fontSize: 9.5,
+                      letterSpacing: "0.22em",
+                      color: "var(--accent)",
+                    }}
+                  >
+                    {String(li + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className="mono"
+                    style={{
+                      fontSize: 10.5,
+                      letterSpacing: "0.14em",
+                      color: "rgba(var(--ondark-rgb),0.62)",
+                    }}
+                  >
+                    {l.label}
+                  </span>
+                </div>
                 <div
                   style={{
                     flex: "1 1 260px",
                     minWidth: 0,
                     display: "flex",
                     flexWrap: "wrap",
-                    gap: 10,
+                    gap: "clamp(6px,0.8vw,10px)",
                     alignItems: "center",
                   }}
                 >
-                  {l.nodes.map((n) => (
-                    <span
-                      key={n}
-                      className="mono"
-                      style={{
-                        border: "1px solid rgba(var(--ondark-rgb),0.3)",
-                        padding: "11px 15px",
-                        fontSize: 11,
-                        letterSpacing: "0.1em",
-                        transition:
-                          "background .3s ease, color .3s ease, border-color .3s ease",
-                      }}
-                    >
-                      {n}
-                    </span>
-                  ))}
+                  {l.nodes.flatMap((n, ni) => {
+                    const chip = (
+                      <span
+                        key={`node-${n}`}
+                        className="mono"
+                        style={{
+                          border: "1px solid rgba(var(--ondark-rgb),0.22)",
+                          padding: "10px 16px",
+                          fontSize: 11,
+                          letterSpacing: "0.1em",
+                          color: "var(--ondark)",
+                        }}
+                      >
+                        {n}
+                      </span>
+                    );
+                    if (ni < l.nodes.length - 1) {
+                      return [
+                        chip,
+                        <span
+                          key={`sep-${ni}`}
+                          aria-hidden="true"
+                          style={{
+                            fontSize: 10,
+                            color: "rgba(var(--ondark-rgb),0.2)",
+                            userSelect: "none",
+                          }}
+                        >
+                          →
+                        </span>,
+                      ];
+                    }
+                    return [chip];
+                  })}
                 </div>
               </div>
             ))}
             <div
-              style={{ borderTop: "1px solid rgba(var(--ondark-rgb),0.16)" }}
+              style={{
+                borderTop: "1px solid rgba(var(--ondark-rgb),0.12)",
+              }}
             />
           </div>
         </div>
       </section>
 
+      {/* ── Screenshots from the field ── */}
+      {screenshots.length > 0 && (
+        <section
+          style={{
+            maxWidth: 1480,
+            margin: "0 auto",
+            padding: "clamp(36px,5vw,66px) clamp(18px,4.5vw,64px)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-end",
+              justifyContent: "space-between",
+              gap: 16,
+              marginBottom: "clamp(18px,2.4vw,28px)",
+            }}
+          >
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "clamp(20px,2.4vw,32px)",
+                fontWeight: 500,
+                letterSpacing: "-0.025em",
+              }}
+            >
+              From the field
+            </h2>
+            <span
+              className="mono"
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.18em",
+                color: "var(--faint)",
+              }}
+            >
+              {String(screenshots.length).padStart(2, "0")} SCREENS
+            </span>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "clamp(8px,1.2vw,14px)",
+            }}
+          >
+            {screenshots.map((img, i) => (
+              <div
+                key={i}
+                style={{
+                  position: "relative",
+                  aspectRatio: "16/10",
+                  overflow: "hidden",
+                  background: "var(--tile)",
+                  border: "1px solid rgba(var(--ink-rgb),0.1)",
+                }}
+              >
+                <ContainBlurImage
+                  src={img}
+                  alt={`${project.name} screen ${i + 1}`}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── Tech + Outcomes ── */}
       <section
         style={{
           maxWidth: 1480,
           margin: "0 auto",
-          padding: "clamp(36px, 5vw, 70px) clamp(18px, 4.5vw, 64px)",
+          padding: "clamp(36px,5vw,64px) clamp(18px,4.5vw,64px)",
           display: "flex",
           flexWrap: "wrap",
-          gap: "clamp(26px, 4vw, 64px)",
-          animation: "fragUp .75s cubic-bezier(.2,.7,.2,1) both",
+          gap: "clamp(26px,4vw,64px)",
+          borderTop: "1px solid rgba(var(--ink-rgb),0.1)",
         }}
       >
-        <div style={{ flex: "1 1 260px", minWidth: 0 }}>
+        <div style={{ flex: "1 1 200px", minWidth: 0 }}>
           <span
             className="mono"
             style={{
-              fontSize: 10,
-              letterSpacing: "0.18em",
+              fontSize: 9.5,
+              letterSpacing: "0.22em",
               color: "var(--faint)",
+              display: "block",
+              marginBottom: 20,
             }}
           >
             TECHNOLOGIES
           </span>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 8,
-              marginTop: 18,
-            }}
-          >
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {project.tech.map((t) => (
               <span
                 key={t}
@@ -484,47 +688,48 @@ export default async function ProjectPage({
             ))}
           </div>
         </div>
-        <div style={{ flex: "1.4 1 320px", minWidth: 0 }}>
+
+        <div style={{ flex: "1.6 1 300px", minWidth: 0 }}>
           <span
             className="mono"
             style={{
-              fontSize: 10,
-              letterSpacing: "0.18em",
+              fontSize: 9.5,
+              letterSpacing: "0.22em",
               color: "var(--faint)",
+              display: "block",
+              marginBottom: 20,
             }}
           >
             KEY OUTCOMES
           </span>
-          <div
-            style={{
-              marginTop: 18,
-              borderTop: "1px solid rgba(var(--ink-rgb),0.14)",
-            }}
-          >
-            {project.outcomes.map((o) => (
+          <div style={{ borderTop: "1px solid rgba(var(--ink-rgb),0.1)" }}>
+            {project.outcomes.map((o, i) => (
               <div
                 key={o}
                 style={{
                   display: "flex",
-                  gap: 14,
+                  gap: 20,
                   alignItems: "baseline",
                   padding: "15px 0",
-                  borderBottom: "1px solid rgba(var(--ink-rgb),0.14)",
+                  borderBottom: "1px solid rgba(var(--ink-rgb),0.1)",
                 }}
               >
                 <span
+                  className="mono"
                   style={{
-                    width: 6,
-                    height: 6,
-                    background: "var(--accent)",
-                    display: "block",
-                    flex: "0 0 auto",
+                    fontSize: 9.5,
+                    letterSpacing: "0.16em",
+                    color: "var(--accent)",
+                    flex: "0 0 26px",
                   }}
-                />
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
                 <span
                   style={{
-                    fontSize: "clamp(15px, 1.3vw, 19px)",
-                    lineHeight: 1.5,
+                    fontSize: "clamp(15px,1.3vw,18px)",
+                    lineHeight: 1.52,
+                    color: "var(--ink)",
                   }}
                 >
                   {o}
@@ -535,18 +740,19 @@ export default async function ProjectPage({
         </div>
       </section>
 
+      {/* ── Next project ── */}
       <section
         style={{
           maxWidth: 1480,
           margin: "0 auto",
-          padding: "0 clamp(18px, 4.5vw, 64px) clamp(40px, 6vw, 80px)",
+          padding:
+            "clamp(24px,3vw,40px) clamp(18px,4.5vw,64px) clamp(44px,6vw,80px)",
           display: "flex",
           flexWrap: "wrap",
           gap: 20,
           alignItems: "center",
           justifyContent: "space-between",
-          borderTop: "1px solid rgba(var(--ink-rgb),0.14)",
-          paddingTop: "clamp(24px, 3vw, 40px)",
+          borderTop: "1px solid rgba(var(--ink-rgb),0.12)",
         }}
       >
         <Link
@@ -571,7 +777,7 @@ export default async function ProjectPage({
           <div
             style={{
               marginTop: 10,
-              fontSize: "clamp(24px, 3.4vw, 44px)",
+              fontSize: "clamp(24px,3.4vw,44px)",
               fontWeight: 500,
               letterSpacing: "-0.03em",
             }}

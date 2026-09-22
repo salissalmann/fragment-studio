@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { HeroGlyph } from "@/components/HeroGlyph";
 import { ParticleCanvas } from "@/components/ParticleCanvas";
 import { ProjectCard } from "@/components/ProjectCard";
 import { TeamPhoto } from "@/components/TeamPhoto";
@@ -77,6 +76,11 @@ export default function HomePage() {
   const metricsRef = useRef<HTMLDivElement>(null);
   const counted = useRef(false);
 
+  // Parallax refs — direct DOM mutation, no React re-renders
+  const heroTextRef = useRef<HTMLDivElement>(null);
+  const heroFloat1Ref = useRef<HTMLDivElement>(null);
+  const heroFloat2Ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const el = metricsRef.current;
     if (!el) return;
@@ -139,6 +143,58 @@ export default function HomePage() {
     };
   }, []);
 
+  // Mouse-move parallax for hero — 3 depth layers, visible movement
+  useEffect(() => {
+    const reduced =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    if (reduced) return;
+
+    let tx = 0, ty = 0;
+    let cx = 0, cy = 0;
+    let rafId = 0;
+
+    const onMouse = (e: MouseEvent) => {
+      // Normalise to -0.5 … +0.5
+      tx = e.clientX / window.innerWidth - 0.5;
+      ty = e.clientY / window.innerHeight - 0.5;
+    };
+
+    const tick = () => {
+      // Smooth exponential ease toward cursor (feels natural, not mechanical)
+      cx += (tx - cx) * 0.06;
+      cy += (ty - cy) * 0.06;
+
+      const scroll = window.scrollY;
+
+      // Layer 1 — deep background shapes: ±60 px horizontal, ±46 px vertical
+      // Also drifts upward on scroll (slower than page = classic parallax)
+      if (heroFloat1Ref.current) {
+        heroFloat1Ref.current.style.transform =
+          `translate(${cx * 120}px, ${cy * 92 - scroll * 0.22}px)`;
+      }
+      // Layer 2 — mid shapes: ±36 px / ±28 px
+      if (heroFloat2Ref.current) {
+        heroFloat2Ref.current.style.transform =
+          `translate(${cx * 72}px, ${cy * 56 - scroll * 0.12}px)`;
+      }
+      // Content — barely drifts, just enough to feel anchored in the scene
+      if (heroTextRef.current) {
+        heroTextRef.current.style.transform =
+          `translate(${cx * 14}px, ${cy * 10}px)`;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("mousemove", onMouse);
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouse);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
   const scrollWork = () => {
     const el = document.querySelector("[data-work]");
     if (el instanceof HTMLElement) {
@@ -151,230 +207,312 @@ export default function HomePage() {
 
   return (
     <main>
-      {/* Hero */}
+      {/* Hero — full-viewport, centered */}
       <section
         style={{
           position: "relative",
-          maxWidth: 1480,
-          margin: "0 auto",
-          padding:
-            "clamp(36px, 6vw, 86px) clamp(18px, 4.5vw, 64px) clamp(40px, 6vw, 80px)",
+          overflow: "hidden",
+          minHeight: "100dvh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
+        {/* ── Parallax layer 1: deepest background shapes (most movement) ── */}
         <div
+          ref={heroFloat1Ref}
+          aria-hidden="true"
           style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "clamp(28px, 4vw, 56px)",
-            alignItems: "flex-end",
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            willChange: "transform",
           }}
         >
-          <div style={{ flex: "1 1 420px", minWidth: 0 }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                marginBottom: "clamp(20px, 3vw, 34px)",
-              }}
-            >
-              <span
-                style={{
-                  width: 34,
-                  height: 1,
-                  background: "var(--accent)",
-                  display: "block",
-                }}
-              />
-              <span
-                className="mono"
-                style={{
-                  fontSize: 10.5,
-                  letterSpacing: "0.2em",
-                  color: "var(--mono)",
-                  textTransform: "uppercase",
-                }}
-              >
-                Independent digital engineering studio
-              </span>
-            </div>
-            <h1
-              style={{
-                fontSize: "clamp(42px, 6.6vw, 96px)",
-                lineHeight: 0.96,
-                letterSpacing: "-0.035em",
-                fontWeight: 500,
-                margin: "0 0 clamp(20px, 2.6vw, 30px)",
-              }}
-            >
-              We build the{" "}
-              <span style={{ fontStyle: "italic", fontWeight: 300 }}>
-                systems
-              </span>
-              <br />
-              behind ambitious
-              <br />
-              ideas
-              <span style={{ color: "var(--accent)" }}>.</span>
-            </h1>
-            <p
-              style={{
-                fontSize: "clamp(15.5px, 1.25vw, 19px)",
-                lineHeight: 1.6,
-                color: "var(--muted)",
-                maxWidth: "47ch",
-                margin: "0 0 clamp(26px, 3vw, 38px)",
-              }}
-            >
-              Fragment is a product engineering studio building software, AI
-              systems and infrastructure for companies that need more than
-              another agency.
-            </p>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 14,
-                alignItems: "center",
-              }}
-            >
-              <Link
-                href="/contact"
-                className="mono btn-fill"
-                style={{
-                  fontSize: 11.5,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  padding: "16px 24px",
-                  textDecoration: "none",
-                }}
-              >
-                Start a project →
-              </Link>
-              <button
-                type="button"
-                onClick={scrollWork}
-                className="mono hover-accent"
-                style={{
-                  fontSize: 11.5,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "var(--ink)",
-                  padding: "16px 6px",
-                  cursor: "pointer",
-                  border: 0,
-                  borderBottom: "1px solid var(--ink)",
-                  background: "transparent",
-                  transition: "color .3s ease, border-color .3s ease",
-                }}
-              >
-                Explore our work ↓
-              </button>
-            </div>
-          </div>
+          {/* Large diamond (square rotated 45°) — top right */}
+          <span
+            style={{
+              position: "absolute",
+              top: "6%",
+              right: "4%",
+              width: "clamp(180px, 22vw, 320px)",
+              height: "clamp(180px, 22vw, 320px)",
+              border: "1px solid var(--accent)",
+              opacity: 0.18,
+              display: "block",
+              transform: "rotate(45deg)",
+            }}
+          />
+          {/* Large faint ink square — bottom left */}
+          <span
+            style={{
+              position: "absolute",
+              bottom: "6%",
+              left: "3%",
+              width: "clamp(120px, 14vw, 200px)",
+              height: "clamp(120px, 14vw, 200px)",
+              border: "1px solid rgba(var(--ink-rgb),0.1)",
+              display: "block",
+            }}
+          />
+          {/* Solid accent square — lower right */}
+          <span
+            style={{
+              position: "absolute",
+              bottom: "20%",
+              right: "8%",
+              width: 18,
+              height: 18,
+              background: "var(--accent)",
+              opacity: 0.6,
+              display: "block",
+            }}
+          />
+        </div>
 
+        {/* ── Parallax layer 2: mid-depth shapes ── */}
+        <div
+          ref={heroFloat2Ref}
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            willChange: "transform",
+          }}
+        >
+          {/* Medium hollow square — mid left */}
+          <span
+            style={{
+              position: "absolute",
+              top: "34%",
+              left: "4%",
+              width: "clamp(56px, 7vw, 96px)",
+              height: "clamp(56px, 7vw, 96px)",
+              border: "1px solid rgba(var(--ink-rgb),0.14)",
+              display: "block",
+            }}
+          />
+          {/* Corner bracket — upper right quadrant */}
+          <span
+            style={{
+              position: "absolute",
+              top: "20%",
+              right: "22%",
+              width: 28,
+              height: 28,
+              borderTop: "2px solid var(--accent)",
+              borderRight: "2px solid var(--accent)",
+              opacity: 0.55,
+              display: "block",
+            }}
+          />
+          {/* Accent dot — top left quadrant */}
+          <span
+            style={{
+              position: "absolute",
+              top: "18%",
+              left: "12%",
+              width: 10,
+              height: 10,
+              background: "var(--accent)",
+              opacity: 0.5,
+              display: "block",
+            }}
+          />
+          {/* Horizontal line fragment — lower left */}
+          <span
+            style={{
+              position: "absolute",
+              bottom: "28%",
+              left: "9%",
+              width: 56,
+              height: 1,
+              background: "rgba(var(--ink-rgb),0.22)",
+              display: "block",
+            }}
+          />
+          {/* Small ink square — mid right edge */}
+          <span
+            style={{
+              position: "absolute",
+              top: "55%",
+              right: "5%",
+              width: 8,
+              height: 8,
+              background: "rgba(var(--ink-rgb),0.18)",
+              display: "block",
+            }}
+          />
+        </div>
+
+        {/* ── Content (slight drift — feels embedded in the scene) ── */}
+        <div
+          ref={heroTextRef}
+          style={{
+            position: "relative",
+            zIndex: 1,
+            textAlign: "center",
+            maxWidth: 880,
+            width: "100%",
+            padding: "0 clamp(20px, 5vw, 64px)",
+            willChange: "transform",
+          }}
+        >
+          {/* Eyebrow with flanking lines */}
           <div
             style={{
-              flex: "1 1 380px",
-              minWidth: 0,
-              position: "relative",
-              border: "1px solid rgba(var(--ink-rgb),0.14)",
-              background: "var(--panel)",
-              padding: "clamp(18px, 2.2vw, 28px)",
               display: "flex",
-              flexDirection: "column",
-              gap: "clamp(18px, 2.4vw, 28px)",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 14,
+              marginBottom: "clamp(14px, 1.8vw, 24px)",
             }}
           >
-            <div
-              className="mono"
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 14,
-                fontSize: 9.5,
-                letterSpacing: "0.18em",
-                color: "var(--faint)",
-              }}
-            >
-              <span>FRAGMENT / SYSTEM</span>
-              <span>FIG. 01</span>
-            </div>
-            <HeroGlyph />
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: 10 }}
-            >
-              {(
-                [
-                  ["01", "Fragments", "scattered"],
-                  ["02", "Systems", "connected"],
-                  ["03", "Products", "shipped"],
-                ] as const
-              ).map(([num, label, status]) => (
-                <div
-                  key={num}
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 12,
-                    borderTop: "1px solid rgba(var(--ink-rgb),0.14)",
-                    paddingTop: 12,
-                  }}
-                >
-                  <span
-                    className="mono"
-                    style={{
-                      fontSize: 9.5,
-                      letterSpacing: "0.16em",
-                      color: "var(--accent)",
-                      flex: "0 0 26px",
-                    }}
-                  >
-                    {num}
-                  </span>
-                  <span style={{ fontSize: 13.5, color: "var(--ink)" }}>
-                    {label}
-                  </span>
-                  <span
-                    style={{
-                      flex: "1 1 auto",
-                      height: 1,
-                      background: "rgba(var(--ink-rgb),0.14)",
-                    }}
-                  />
-                  <span
-                    className="mono"
-                    style={{ fontSize: 9.5, color: "var(--faint)" }}
-                  >
-                    {status}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div
-              style={{
-                position: "absolute",
-                top: -1,
-                left: -1,
-                width: 9,
-                height: 9,
-                borderTop: "1px solid var(--accent)",
-                borderLeft: "1px solid var(--accent)",
+                flex: "0 0 auto",
+                width: 32,
+                height: 1,
+                background: "var(--accent)",
+                display: "block",
               }}
             />
-            <div
+            <span
+              className="mono"
               style={{
-                position: "absolute",
-                bottom: -1,
-                right: -1,
-                width: 9,
-                height: 9,
-                borderBottom: "1px solid var(--accent)",
-                borderRight: "1px solid var(--accent)",
+                fontSize: 10.5,
+                letterSpacing: "0.2em",
+                color: "var(--mono)",
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Independent digital engineering studio
+            </span>
+            <span
+              style={{
+                flex: "0 0 auto",
+                width: 32,
+                height: 1,
+                background: "var(--accent)",
+                display: "block",
               }}
             />
           </div>
+
+          {/* Main headline */}
+          <h1
+            style={{
+              fontSize: "clamp(40px, 5.2vw, 106px)",
+              lineHeight: 0.93,
+              letterSpacing: "-0.04em",
+              fontWeight: 500,
+              margin: "0 0 clamp(16px, 2vw, 26px)",
+            }}
+          >
+            We build the{" "}
+            <span style={{ fontStyle: "italic", fontWeight: 300 }}>
+              systems
+            </span>
+            <br />
+            behind ambitious
+            <br />
+            ideas<span style={{ color: "var(--accent)" }}>.</span>
+          </h1>
+
+          {/* Subtext */}
+          <p
+            style={{
+              fontSize: "clamp(15px, 1.1vw, 18px)",
+              lineHeight: 1.6,
+              color: "var(--muted)",
+              maxWidth: "50ch",
+              margin: "0 auto clamp(22px, 2.6vw, 36px)",
+            }}
+          >
+            Fragment is a product engineering studio building software, AI
+            systems and infrastructure for companies that need more than
+            another agency.
+          </p>
+
+          {/* CTAs — centered */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 16,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Link
+              href="/contact"
+              className="mono btn-fill"
+              style={{
+                fontSize: 11.5,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                padding: "14px 24px",
+                textDecoration: "none",
+              }}
+            >
+              Book a demo →
+            </Link>
+            <button
+              type="button"
+              onClick={scrollWork}
+              className="mono hover-accent"
+              style={{
+                fontSize: 11.5,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "var(--ink)",
+                padding: "14px 8px",
+                cursor: "pointer",
+                border: 0,
+                borderBottom: "1px solid var(--ink)",
+                background: "transparent",
+                transition: "color .3s ease, border-color .3s ease",
+              }}
+            >
+              Explore our work ↓
+            </button>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div
+          className="mono"
+          style={{
+            position: "absolute",
+            bottom: 28,
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 9,
+              letterSpacing: "0.24em",
+              color: "var(--faint)",
+            }}
+          >
+            SCROLL
+          </span>
+          <span
+            style={{
+              width: 1,
+              height: 36,
+              background: "var(--accent)",
+              display: "block",
+              animation: "fragBlink 2s ease-in-out infinite",
+            }}
+          />
         </div>
       </section>
 
@@ -1091,7 +1229,7 @@ export default function HomePage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(168px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
             gap: "clamp(12px, 1.6vw, 22px)",
           }}
         >

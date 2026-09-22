@@ -210,7 +210,7 @@ export function SiteHeader({ onMenuOpen }: SiteHeaderProps) {
               textDecoration: "none",
             }}
           >
-            Start a project →
+            Book a demo →
           </Link>
 
           <button
